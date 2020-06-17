@@ -19,15 +19,15 @@ module.exports = {
      */
     報名網址: "https://docs.google.com/forms/d/e/1FAIpQLSfjpUFuBeReYeDABR95jP-Ghyc4Q217MO5zYoMMhU3ZcLqrag/viewform", // 南區
 
-    遊戲王ID: '0500309680',
+    遊戲王ID: '0500xxxxxx',
 
-    年齡: 29,
+    年齡: 18,
 
-    姓名: "李培寗",
+    姓名: "OOO",
 
-    生日: "001990-11-24",
+    生日: "00YYYY-MM-DD",
 
-    身分證字號: "F128142874",
+    身分證字號: "X123456789",
 
     /**
      * 卡套領取店家，請設置你要領取的卡套店家
