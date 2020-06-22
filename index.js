@@ -3,6 +3,8 @@ const puppeteer = require('puppeteer');
 const { TimeoutError } = require('puppeteer/Errors');
 const 表單資訊 = require('./表單資訊.js');
 
+const 民國初年 = 1911;
+
 const autoSign = async (報名場次) => {
     const 瀏覽器 = await puppeteer.launch({
         executablePath: 表單資訊.Google路徑,
@@ -17,12 +19,10 @@ const autoSign = async (報名場次) => {
     const 網頁 = await 瀏覽器.newPage();
     await 網頁.goto(表單資訊.報名網址);
 
-    await 網頁.screenshot({path: 'example.png'});
-
     while (await 網頁.$('.freebirdThemedRadio') === null) {
         console.log('--> 等待報名表單開啟: 場次' + 報名場次 + " " + (new Date()).toLocaleString());
         await 網頁.reload();
-        await 網頁.waitFor(500);
+        await 網頁.waitFor(300);
     }
 
     await 網頁.waitFor('.freebirdThemedRadio');
@@ -48,8 +48,17 @@ const autoSign = async (報名場次) => {
     await 網頁.type('input[aria-label="真實姓名"]', String(表單資訊.姓名));
 
     // 生日
-    await 網頁.waitFor('input[type="date"]');
-    await 網頁.type('input[type="date"]', String(表單資訊.生日));
+    const [西元年, 月, 日] = String(表單資訊.生日).split('-');
+    const 民國年 = Number(西元年) - 民國初年;
+    if (await 網頁.$('input[type="date"]') !== null) {
+        await 網頁.type('input[type="date"]', String(表單資訊.生日));
+    }
+    if (await 網頁.$('input[aria-label="民國出生年月日(XX/YY/ZZ)"]') !== null) {
+        await 網頁.type('input[aria-label="民國出生年月日(XX/YY/ZZ)"]', `${民國年}/${月}/${日}`);
+    }
+    if (await 網頁.$('input[aria-label="民國出生年月日(XXYYZZ)"]') !== null) {
+        await 網頁.type('input[aria-label="民國出生年月日(XXYYZZ)"]', `${民國年}${月}${日}`);
+    }
 
     // 身分證字號
     await 網頁.waitFor('input[aria-label="身分證字號"]');
@@ -75,7 +84,7 @@ const autoSign = async (報名場次) => {
     }
 
     console.log('場次' + 報名場次 + ' 報名完成！');
-    網頁.close();
+    await 網頁.screenshot({path: 'complete'+ 報名場次 +'.png'});
 };
 
 (async () => {
